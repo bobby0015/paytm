@@ -1,9 +1,19 @@
 const userModel = require('../models/user.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { userInputs } = require('../validation/user.validation')
 
 const signup = async (req, res) => {
     const { firstName, lastName, email, password } = req.body
+
+    const validInputs = userInputs({firstName,lastName,email,password})
+
+    if(validInputs != true) {
+        return res.status(400).json({
+            msg : validInputs,
+            success : false
+        })
+    }
 
     const user = await userModel.findOne({ email })
 
