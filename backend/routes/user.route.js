@@ -1,13 +1,10 @@
 const express = require('express')
+const { signin, signup } = require('../controllers/user.controller')
 const router = express.Router()
 
-router.post('/user/signup', (req,res)=>{
-    res.send("Hey there from signup")
-})
+router.post('/user/signup', signup)
 
-router.post('/user/signin', (req,res)=>{
-    res.send("Hey there from signin")
-})
+router.post('/user/signin', signin)
     
 router.put('/user:id',(req,res)=>{
     res.send('Hey there from put')
