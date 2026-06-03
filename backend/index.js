@@ -4,6 +4,9 @@ const User = require('./routes/user.route')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
+//config the .env file 
+require('dotenv').config()
+
 //connection to the database 
 require('./db')
 
@@ -14,6 +17,8 @@ app.use(bodyParser.urlencoded())
 
 app.use('/api/v1',User)
 
-app.listen(3000,()=>{
-    console.log("Server is running on PORT : 3000")
+const PORT = process.env.PORT
+
+app.listen(PORT,()=>{
+    console.log("Server is running on PORT : " + PORT)
 })
