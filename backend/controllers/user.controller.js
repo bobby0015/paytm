@@ -39,7 +39,7 @@ const signup = async (req, res) => {
                         password: hashedPassword
                     })
 
-                    const newUserToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET)
+                    const newUserToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET || 'secretkey')
 
                     return res.status(200).json({
                         msg: 'User account created successfully !',
@@ -71,7 +71,7 @@ const signin = async (req, res) => {
 
     try {
         const user = await userModel.findOne({email})
-        
+
         if (!user) {
             return res.status(404).json({
                 msg: 'User not found',
@@ -88,7 +88,7 @@ const signin = async (req, res) => {
             }
 
             try {
-                const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
+                const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey')
 
                 return res.status(200).json({
                     msg : 'User logged in successfully',
