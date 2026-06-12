@@ -70,7 +70,7 @@ const signin = async (req, res) => {
     const { email, password } = req.body
 
     try {
-        const user = await userModel.findOne({email})
+        const user = await userModel.findOne({ email })
 
         if (!user) {
             return res.status(404).json({
@@ -91,8 +91,8 @@ const signin = async (req, res) => {
                 const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey')
 
                 return res.status(200).json({
-                    msg : 'User logged in successfully',
-                    success : true,
+                    msg: 'User logged in successfully',
+                    success: true,
                     token
                 })
 
@@ -112,7 +112,64 @@ const signin = async (req, res) => {
     }
 }
 
+const updateUser = async (req, res) => {
+    const { firstName, lastName, password } = req.body
+
+    try {
+        const user = await userModel.findOne({ _id: req.userId })
+
+        if (!user) {
+            return res.status(404).json({
+                msg: 'User not found',
+                success: false
+            })
+        }
+
+        //Intializing the empty object
+        const updateFields = {}
+
+        if(firstName) updateFields.firstName = firstName
+        if(lastName) updateFields.lastName = lastName
+
+        if(password) {
+            const saltRounds = parseInt(process.env.SALT_ROUNDS)
+            const salt = bcrypt.genSalt(saltRounds)
+            updateFields.password = bcrypt.hash(password,salt)
+        }
+
+        if(Object.keys(updateFields).length === 0) {
+            return res.status(400).json({
+                msg : 'No feilds to update',
+                success : false
+            })
+        }
+
+        // updating the user
+        const updatedUser = await userModel.findByIdAndUpdate(
+            req.userId,
+            {$set : updateFields},
+            {new : true, runValidators : true}
+        ).select("-password");
+
+        return res.status(200).json({
+            msg: 'User updated successfully',
+            success: true,
+            user: updatedUser
+        });
+
+
+    } catch (err) {
+        console.error("Update User Error:", err);
+        return res.status(500).json({
+            msg: 'Something went wrong',
+            success: false
+        })
+    }
+
+}
+
 module.exports = {
     signin,
-    signup
+    signup,
+    updateUser
 }

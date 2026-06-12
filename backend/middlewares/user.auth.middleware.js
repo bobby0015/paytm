@@ -14,7 +14,7 @@ function userAuthMiddleware(req, res, next) {
 
     try {
         const data = jwt.verify(token, process.env.JWT_SECRET || 'secretkey')
-        req.user = data
+        req.userId = data.userId
         next()
     } catch (err) {
         return res.status(500).json({
