@@ -128,27 +128,27 @@ const updateUser = async (req, res) => {
         //Intializing the empty object
         const updateFields = {}
 
-        if(firstName) updateFields.firstName = firstName
-        if(lastName) updateFields.lastName = lastName
+        if (firstName) updateFields.firstName = firstName
+        if (lastName) updateFields.lastName = lastName
 
-        if(password) {
+        if (password) {
             const saltRounds = parseInt(process.env.SALT_ROUNDS)
             const salt = bcrypt.genSalt(saltRounds)
-            updateFields.password = bcrypt.hash(password,salt)
+            updateFields.password = bcrypt.hash(password, salt)
         }
 
-        if(Object.keys(updateFields).length === 0) {
+        if (Object.keys(updateFields).length === 0) {
             return res.status(400).json({
-                msg : 'No feilds to update',
-                success : false
+                msg: 'No feilds to update',
+                success: false
             })
         }
 
         // updating the user
         const updatedUser = await userModel.findByIdAndUpdate(
             req.userId,
-            {$set : updateFields},
-            {new : true, runValidators : true}
+            { $set: updateFields },
+            { new: true, runValidators: true }
         ).select("-password");
 
         return res.status(200).json({
@@ -168,8 +168,37 @@ const updateUser = async (req, res) => {
 
 }
 
+const findUser = async (req, res) => {
+    const filter = req.query.filter || "";
+    console.log(filter)
+    const users = await userModel.find({
+        $or: [
+            {
+                firstName: {
+                    "$regex": filter
+                }
+            },
+            {
+                lastName: {
+                    "$regex": filter
+                }
+            }
+        ]
+    })
+    console.log(users)
+    res.status(200).json({
+        Users : users.map((user)=>({
+            email: user.email,
+            firsname: user.firstName,
+            lastname: user.lastName,
+            id: user._id
+        }))
+    })
+}
+
 module.exports = {
     signin,
     signup,
-    updateUser
+    updateUser,
+    findUser
 }
