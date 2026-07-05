@@ -1,4 +1,5 @@
 const userModel = require('../models/user.model')
+const userAcc = require("../models/account.model")
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { userInputs } = require('../validation/user.validation')
@@ -41,10 +42,16 @@ const signup = async (req, res) => {
 
                     const newUserToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET || 'secretkey')
 
+                    const acc = await userAcc.create({
+                        userId: newUser._id,
+                        balance: Math.floor(Math.random() * 1000) + 100
+                    })
+
                     return res.status(200).json({
                         msg: 'User account created successfully !',
                         success: true,
-                        user: { data: newUser, token: newUserToken }
+                        user: { data: newUser, token: newUserToken },
+                        account: acc
                     })
 
                 } catch (err) {
@@ -187,7 +194,7 @@ const findUser = async (req, res) => {
     })
     console.log(users)
     res.status(200).json({
-        Users : users.map((user)=>({
+        Users: users.map((user) => ({
             email: user.email,
             firsname: user.firstName,
             lastname: user.lastName,
