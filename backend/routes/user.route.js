@@ -3,12 +3,12 @@ const { signin, signup, updateUser, findUser } = require('../controllers/user.co
 const { userAuthMiddleware } = require('../middlewares/user.auth.middleware')
 const router = express.Router()
 
-router.post('/user/signup', signup)
+router.post('/signup', signup)
 
-router.post('/user/signin', signin)
+router.post('/signin', signin)
     
-router.put('/user',userAuthMiddleware, updateUser)
+router.put('/update',userAuthMiddleware, updateUser)
 
-router.get('/user/bulk',userAuthMiddleware, findUser)
+router.get('/bulk',userAuthMiddleware, findUser)
 
 module.exports = router

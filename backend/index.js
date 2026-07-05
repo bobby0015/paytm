@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express()
 const User = require('./routes/user.route')
+const Account = require('./routes/account.route')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
@@ -15,7 +16,8 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded())
 
-app.use('/api/v1',User)
+app.use('/api/v1/user',User)
+app.use('/api/v1/accounts',Account)
 
 const PORT = process.env.PORT
 
