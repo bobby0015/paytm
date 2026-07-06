@@ -52,10 +52,7 @@ const Signin = () => {
           <FieldDescription>Do not have an account ? <Link to='/signup' className="text-blue-400">Signup</Link></FieldDescription>
         </Field>
         <Field orientation="horizontal">
-          <Button type="reset" variant="outline">
-            Reset
-          </Button>
-          <Button type="submit">Submit</Button>
+          <Button className='cursor-pointer' type="submit">Singin</Button>
         </Field>
       </FieldGroup>
     </div>
