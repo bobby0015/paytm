@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/input-group"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 const Signin = () => {
 
@@ -46,6 +47,9 @@ const Signin = () => {
               }
             </InputGroupAddon>
           </InputGroup>
+        </Field>
+        <Field>
+          <FieldDescription>Do not have an account ? <Link to='/signup' className="text-blue-400">Signup</Link></FieldDescription>
         </Field>
         <Field orientation="horizontal">
           <Button type="reset" variant="outline">
