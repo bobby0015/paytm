@@ -1,8 +1,8 @@
 
+
 const Home = () => {
   return (
-    <div>
-      Home
+    <div className="flex justify-center">
     </div>
   )
 }
