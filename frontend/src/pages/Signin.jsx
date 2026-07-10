@@ -1,4 +1,5 @@
-import { userSignin } from "@/api/authAPI"
+
+import { userSignin } from "@/api/authApi"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -14,10 +15,12 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import { authState } from "@/store/atoms/userAtom"
 import { Eye, EyeOff } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useRecoilState } from "recoil"
 
 const Signin = () => {
   const [hidePassword, setHidePassword] = useState(true)
@@ -25,6 +28,14 @@ const Signin = () => {
     email: '',
     password: ''
   })
+  const [user, setUser] = useRecoilState(authState)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user.isAuthenticated && !!localStorage.getItem('token')) {
+      navigate('/')
+    }
+  }, [user, navigate])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -35,10 +46,26 @@ const Signin = () => {
 
     try {
       const data = await userSignin(formData)
+
+      // set the token to the localstorage
+      localStorage.setItem('token', data.token)
+
+      // set global state for user
+      setUser({
+        isAuthenticated: true,
+        user: data.user,
+        token: data.token
+      })
+
       data.success ? toast.success(data.msg) : toast.error('Something went wrong. Try again!')
+
+      setTimeout(() => {
+        navigate('/')
+      }, 2000)
     } catch (err) {
-      const errMsg = err.response.data.msg
-      errMsg ? toast.error(errMsg) : toast.error('Something went wrong. Try again!')
+      const errMsg = err.response?.data?.msg || 'Something went wrong. Try again!'
+      console.log(err)
+      toast.error(errMsg)
     }
 
   }
