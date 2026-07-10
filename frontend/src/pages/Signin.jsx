@@ -1,3 +1,4 @@
+import { userSignin } from "@/api/authAPI"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -13,7 +14,6 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
-import axios from "axios"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
@@ -33,13 +33,14 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const response = await axios.post('http://localhost:3000/api/v1/user/signin', formData)
-    if (!response.data.success) {
-      toast.error(response.data.msg);
-    } else {
-      toast.success(response.data.msg);
+    try {
+      const data = await userSignin(formData)
+      data.success ? toast.success(data.msg) : toast.error('Something went wrong. Try again!')
+    } catch (err) {
+      const errMsg = err.response.data.msg
+      errMsg ? toast.error(errMsg) : toast.error('Something went wrong. Try again!')
     }
-    console.log(response)
+
   }
 
   return (
