@@ -1,3 +1,4 @@
+import { userSignup } from "@/api/authAPI"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -15,11 +16,34 @@ import {
 } from "@/components/ui/input-group"
 import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
+import toast, { Toaster } from "react-hot-toast"
 import { Link } from "react-router-dom"
 
 const Signup = () => {
-
   const [hidePassword, setHidePassword] = useState(true)
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+  })
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    console.log(formData)
+    try {
+      const data = await userSignup(formData)
+      data.success ? toast.success(data.msg) : toast.error('Something went wrong. Try again!')
+    } catch (err) {
+      const errMsg = err.response.data.msg
+      errMsg ? toast.error(errMsg) : toast.error('Something went wrong. Try again!')
+    }
+
+  }
 
   return (
     <div className="w-full pt-32 flex items-center justify-center">
@@ -31,11 +55,11 @@ const Signup = () => {
         <FieldGroup className="grid max-w-full grid-cols-2">
           <Field>
             <FieldLabel htmlFor="first-name">First Name</FieldLabel>
-            <Input id="first-name" placeholder="Jordan" />
+            <Input onChange={handleChange} name='firstName' id="first-name" placeholder="Jordan" />
           </Field>
           <Field>
             <FieldLabel htmlFor="last-name">Last Name</FieldLabel>
-            <Input id="last-name" placeholder="Lee" />
+            <Input onChange={handleChange} name='lastName' id="last-name" placeholder="Lee" />
           </Field>
         </FieldGroup>
         <Field>
@@ -43,6 +67,8 @@ const Signup = () => {
           <Input
             id="fieldgroup-email"
             type="email"
+            name="email"
+            onChange={handleChange}
             placeholder="name@example.com"
           />
           <FieldDescription>Enrter a valid email address</FieldDescription>
@@ -50,7 +76,7 @@ const Signup = () => {
         <Field>
           <FieldLabel htmlFor="fieldgroup-password">Password</FieldLabel>
           <InputGroup>
-            <InputGroupInput id="input-group-password" type={hidePassword ? 'password' : 'text'} placeholder="Password" />
+            <InputGroupInput id="input-group-password" type={hidePassword ? 'password' : 'text'} onChange={handleChange} name='password' placeholder="Password" />
             <InputGroupAddon align="inline-end">
               {
                 hidePassword ? <Eye className="cursor-pointer" onClick={() => hidePassword ? setHidePassword(false) : setHidePassword(true)} /> : <EyeOff className="cursor-pointer" onClick={() => hidePassword ? setHidePassword(false) : setHidePassword(true)} />
@@ -62,9 +88,10 @@ const Signup = () => {
           <FieldDescription>Already have an account ? <Link to='/signin' className="text-blue-400">Signin</Link></FieldDescription>
         </Field>
         <Field orientation="horizontal">
-          <Button className='cursor-pointer' type="submit">Create an account</Button>
+          <Button onClick={handleSubmit} className='cursor-pointer' type="submit">Create an account</Button>
         </Field>
       </FieldGroup>
+      <Toaster />
     </div>
   )
 }
